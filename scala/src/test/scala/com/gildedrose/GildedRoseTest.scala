@@ -4,7 +4,7 @@ import org.scalatest._
 
 class GildedRoseTest extends FlatSpec with Matchers {
 
-  def mixedItems = new {
+  def mixedNonLegendaryItems = new {
       val items = Array[Item](
         new Item("+5 Dexterity Vest", 10, 20),
         new Item("Cheap +5 Dexterity Vest", 10, 1),
@@ -12,8 +12,6 @@ class GildedRoseTest extends FlatSpec with Matchers {
         new Item("Aged Brie", 2, 49),
         new Item("Elixir of the Mongoose", 5, 7),
         new Item("Elixir of the Mongoose over due", 0, 7),
-        new Item("Sulfuras, Hand of Ragnaros", 0, 80),
-        new Item("Sulfuras, Hand of Ragnaros", -1, 80),
         new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20),
         new Item("Backstage passes to a TAFKAL80ETC concert", 10, 49),
         new Item("Backstage passes to a TAFKAL80ETC concert", 5, 49),
@@ -24,18 +22,18 @@ class GildedRoseTest extends FlatSpec with Matchers {
   }
 
   it should "construct the items array with the proper order" in {
-    val f = mixedItems
+    val f = mixedNonLegendaryItems
     (f.app.items.map(_.name)) should equal (f.items.map(_.name))
   }
 
   it should "lower after each day the sellIn" in {
-    val f = mixedItems
+    val f = mixedNonLegendaryItems
     f.app.updateQuality()
     (f.app.items.map(_.sellIn)) should equal (f.items.map(_.sellIn - 1))
   }
 
   it should "never degrade the quality of items to negative" in {
-    val f = mixedItems
+    val f = mixedNonLegendaryItems
     f.app.updateQuality()
     f.app.updateQuality()
     f.app.updateQuality()
@@ -43,13 +41,13 @@ class GildedRoseTest extends FlatSpec with Matchers {
     (f.app.items.filter(_.quality < 0).length) should equal (0)
   }
 
-  it should "keep the quality of items always below 50 or have the quality equal 80 for legendary items" in {
-    val f = mixedItems
+  it should "keep the quality of items always below 50" in {
+    val f = mixedNonLegendaryItems
     f.app.updateQuality()
     f.app.updateQuality()
     f.app.updateQuality()
     f.app.updateQuality()
-    (f.app.items.filter(i => i.quality > 50 && i.quality != 80).length) should equal (0)
+    (f.app.items.filter(_.quality > 50).length) should equal (0)
   }
 
   def regularItems = new {
@@ -97,6 +95,15 @@ class GildedRoseTest extends FlatSpec with Matchers {
     )
     val test_items = items.map(_.copy())
     val app = new GildedRose(test_items)
+  }
+
+  it should "keep the sellIn of 'Sulfuras, Hand of Ragnaros' invariant" in {
+    val f = sulfurasItems
+    f.app.updateQuality()
+    f.app.updateQuality()
+    f.app.updateQuality()
+    f.app.updateQuality()
+    (f.app.items.map(_.sellIn)) should equal (f.items.map(_.sellIn))
   }
 
   it should "keep the quality of 'Sulfuras, Hand of Ragnaros' invariant" in {
