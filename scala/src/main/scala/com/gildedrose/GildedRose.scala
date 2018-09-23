@@ -24,6 +24,14 @@ class GildedRose(var items: Array[Item]) {
 
         case i if i.name.equals("Sulfuras, Hand of Ragnaros") => {}
 
+        case i if i.name.startsWith("Conjured") => {
+          i.sellIn = i.sellIn - 1
+          i.quality = (i.sellIn match {
+            case s if s >= 0 => i.quality - 2
+            case _ => i.quality - 4
+          }).max(0)
+        }
+
         case i => {
           i.sellIn = i.sellIn - 1
           i.quality = (i.sellIn match {

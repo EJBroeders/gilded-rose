@@ -159,7 +159,8 @@ class GildedRoseTest extends FlatSpec with Matchers {
   def conjuredItems = new {
     val items = Array[Item](
       new Item("Conjured Mana Cake", 3, 6),
-      new Item("Conjured Mana Cake", 0, 6)
+      new Item("Conjured Mana Pie", 3, 6),
+      new Item("Conjured Mana Sweetroll", 0, 6)
     )
     val test_items = items.map(_.copy())
     val app = new GildedRose(test_items)
