@@ -15,7 +15,8 @@ class GildedRoseTest extends FlatSpec with Matchers {
         new Item("Backstage passes to a TAFKAL80ETC concert", 15, 20),
         new Item("Backstage passes to a TAFKAL80ETC concert", 10, 49),
         new Item("Backstage passes to a TAFKAL80ETC concert", 5, 49),
-        new Item("Conjured Mana Cake", 3, 6)
+        new Item("Conjured Mana Cake", 3, 6),
+        new Item("Conjured Mana Cake", 0, 6)
     )
     val test_items = items.map(_.copy())
     val app = new GildedRose(test_items)
@@ -153,5 +154,26 @@ class GildedRoseTest extends FlatSpec with Matchers {
     val f = backstageItems
     f.app.updateQuality()
     (f.app.items.filter(_.sellIn < 0).map(_.quality)) should equal (f.items.filter(_.sellIn <= 0).map(i => 0))
+  }
+
+  def conjuredItems = new {
+    val items = Array[Item](
+      new Item("Conjured Mana Cake", 3, 6),
+      new Item("Conjured Mana Cake", 0, 6)
+    )
+    val test_items = items.map(_.copy())
+    val app = new GildedRose(test_items)
+  }
+
+  it should "degrade the quality of conjured items by two if sellIn > 0" in {
+    val f = conjuredItems
+    f.app.updateQuality()
+    (f.app.items.filter(_.sellIn >= 0).map(_.quality)) should equal (f.items.filter(_.sellIn > 0).map(_.quality - 2))
+  }
+
+  it should "degrade the quality of conjured items by four if sellIn <= 0" in {
+    val f = conjuredItems
+    f.app.updateQuality()
+    (f.app.items.filter(_.sellIn < 0).map(_.quality)) should equal (f.items.filter(_.sellIn <= 0).map(_.quality - 4))
   }
 }
